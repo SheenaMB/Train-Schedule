@@ -36,6 +36,23 @@ var firebaseConfig = {
         });
     });
 
+// To calculate the next arrival 
+//first take firstTrainTime and calculate ALL train times based off frequency
+//get current time from moment() = X and compare to those train times [in an array?]
+// use for loop to scan[allTimes] and find where i < X < i++  
+//get that value = "allTimes[i++]"" time from array and push to Next Arrival
+
+
+//For minutes away
+//take next train time - current time = minutes away
+
+  var a = moment(firstTrain);
+  var b = moment(frequency);
+  console.log(a);
+  console.log(b);
+//   a.from(b) // "a day ago"
+
+
     database.ref().on("child_added", function (snapshot) {
         
         var sv = snapshot.val()
