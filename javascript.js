@@ -1,5 +1,3 @@
-
-
 var firebaseConfig = {
     apiKey: "AIzaSyDBZHGz8BqmoSeXXKMQZlVo_Br4g41qz_w",
     authDomain: "test-project-c95d9.firebaseapp.com",
@@ -8,68 +6,72 @@ var firebaseConfig = {
     storageBucket: "test-project-c95d9.appspot.com",
     messagingSenderId: "536808664402",
     appId: "1:536808664402:web:f5b280efbc835135"
-  };
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
 
-    var database = firebase.database();
+var database = firebase.database();
 
-    var name = "";
-    var destination = "";
-    var firstTrain = "00:00";
-    var frequency = "";
+// var name = "";
+// var destination = "";
+// var firstTrain = "00:00";
+// var frequency = "";
 
-    $("#submit").on("click", function () {
-        event.preventDefault()
+$("#submit").on("click", function () {
+    event.preventDefault()
 
-        name = $("#nameSearch").val().trim();
-        destination = $("#destinationSearch").val().trim();
-        firstTrain = $("#firstTrainTime").val().trim();
-        frequency = $("#frequencyRate").val().trim();
+    name = $("#nameSearch").val().trim();
+    destination = $("#destinationSearch").val().trim();
+    firstTrain = $("#firstTrainTime").val().trim();
+    frequency = $("#frequencyRate").val().trim();
 
-        database.ref().push({
-            name: name,
-            destination: destination,
-            firstTrain: firstTrain,
-            frequency: frequency,
-            dateAdded: firebase.database.ServerValue.TIMESTAMP
-        });
+    
+    
+    database.ref().push({
+        name: name,
+        destination: destination,
+        firstTrain: firstTrain,
+        frequency: frequency,
+        dateAdded: firebase.database.ServerValue.TIMESTAMP
     });
+
+});
 
 // To calculate the next arrival 
 //first take firstTrainTime and calculate ALL train times based off frequency
-//get current time from moment() = X and compare to those train times [in an array?]
-// use for loop to scan[allTimes] and find where i < X < i++  
-//get that value = "allTimes[i++]"" time from array and push to Next Arrival
+//then get how many trains have come through since the first time.
+//then get when the next train is coming and subtract the first time.
 
 
-//For minutes away
-//take next train time - current time = minutes away
+database.ref().on("child_added", function (snapshot) {
+    var sv = snapshot.val()
+    let trainName = sv.name;
+    let destination= sv.destination;
+    let firstTrainTime = moment(sv.firstTrain, "HH:mm")
+    let frequencySnap = snapshot.val().frequency
 
-  var a = moment(firstTrain);
-  var b = moment(frequency);
-  console.log(a);
-  console.log(b);
-//   a.from(b) // "a day ago"
+    let minutefromFirst = moment().diff(firstTrainTime, "minutes");
+    let numberOfStops = Math.ceil(minutefromFirst / parseInt(frequencySnap));
+    let minutesAway = numberOfStops * frequencySnap - minutefromFirst;
+    let nextArrival = moment().add(minutesAway, "minutes").format("HH:mm");
+    
+    console.log(minutefromFirst);
+    // console.log(numberOfStops);
+    // console.log(nextArrival);
 
+    
 
-    database.ref().on("child_added", function (snapshot) {
-        
-        var sv = snapshot.val()
-        
-
-        newDiv = $(`
+    newDiv = $(`
         <tr>
-        <th> ${sv.name}</th>
-        <th> ${sv.destination}</th>
-        <th> ${sv.firstTrain}</th>
-        <th></th>
-        <th> ${sv.frequency}</th>
-        
+        <th> ${trainName}</th>
+        <th> ${destination}</th>
+        <th> ${frequencySnap}</th>
+        <th>${nextArrival}</th>
+        <th> ${minutesAway}</th>
         </tr>
             `)
-        
-        $("#list").append(newDiv)
 
-    })
+    $("#list").append(newDiv)
+
+})
 
