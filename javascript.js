@@ -25,7 +25,7 @@ $("#submit").on("click", function () {
     firstTrain = $("#firstTrainTime").val().trim();
     frequency = $("#frequencyRate").val().trim();
 
-    
+    reset();
     
     database.ref().push({
         name: name,
@@ -36,7 +36,12 @@ $("#submit").on("click", function () {
     });
 
 });
-
+function reset(){
+    $("#nameSearch").val("");
+    $("#destinationSearch").val("");
+    $("#firstTrainTime").val("");
+    $("#frequencyRate").val("");
+}
 // To calculate the next arrival 
 //first take firstTrainTime and calculate ALL train times based off frequency
 //then get how many trains have come through since the first time.
